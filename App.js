@@ -1,50 +1,110 @@
 import React from 'react';
-import { Button, View, Text} from 'react-native';
-import { createStackNavigator } from 'react-navigation';
-
-class HomeScreen extends React.Component {
-    render(){
-        return (
-            <View style={{flex: 1, alignItems: 'center', justifyContent:'center'}}>
-                <Text>Home Screen</Text>
-                <Button
-                    title="跳转到详情页"
-                    onPress={()=> this.props.navigation.navigate('Details')}
-                />
-            </View>
-        )
-    }
+import { FlatList, StyleSheet,View, Text,Button } from 'react-native';
+import { StackNavigator,createMaterialTopTabNavigator } from 'react-navigation';
+import Icon from 'react-native-vector-icons/Ionicons';
+//头部公共组件
+class HeadScreen extends React.Component {
+  render() {
+    return (
+      <View style={{height:35,backgroundColor:'#242529',padding:10,marginTop:25}}>
+        <View style={{flex:1,flexDirection:'row',alignItems:'center'}}>
+          <View style={{flex:1}}>
+              <Text style={{color:'#ffffff'}}>微信</Text>
+          </View>
+          <View style={{flex:1,alignItems:'flex-end'}}>
+            <Text><Icon name="md-add" color="#fff" size={18} /></Text>
+          </View>
+        </View>
+      </View>
+    );
+  }
 }
 
-class DetailsScreen extends React.Component {
-    render() {
-        return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Text>Details Screen</Text>
-                <Button
-                    title="跳转到Home页"
-                    onPress={()=> this.props.navigation.navigate('Home')}
-                />
-                <Button
-                    title="再一次跳转到Details页"
-                    onPress={()=> {console.log(this.props.navigation);this.props.navigation.push('Details')}}
-                />
-            </View>
-        );
-    }
-}
+//动态组件
+const DynamicScreen = () => (
+  <View style={styles.container}>
+      <HeadScreen></HeadScreen>
+      <Text style={styles.news}>新闻列表</Text>
+          <FlatList
+            data={[
+              {key: 'Devin'},
+              {key: 'Jackson'},
+              {key: 'James'},
+              {key: 'Joel'},
+              {key: 'John'},
+              {key: 'Jillian'},
+              {key: 'Jimmy'},
+              {key: 'Julie'},
+            ]}
+            renderItem={({item}) => <Text style={styles.item}>{item.key}</Text>}
+          />
+ </View>
+);
+//发现组件
+const FindScreen = () => (
+  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <Text>Profile Screen</Text>
+  </View>
+);
+//我的组件
+const MyScreen = () => (
+  <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <Text>Profile Screen</Text>
+  </View>
+);
 
-const RootStack = createStackNavigator(
-    {
-        Home: HomeScreen,
-        Details: DetailsScreen
+const RootTabs = createMaterialTopTabNavigator({
+  dynamic: {
+    screen: DynamicScreen,
+    navigationOptions: ({navigation}) => ({
+      title: '动态',
+
+    }),
+  },
+  find: {
+    screen: FindScreen,
+    navigationOptions: ({navigation}) => ({
+      title: '发现',
+    }),
+  },
+  my:{
+    screen:MyScreen,
+    navigationOptions: ({navigation}) => ({
+      title: '我的'
+    })
+  }
+},{
+  tabBarPosition: 'bottom',
+  animationEnabled: true,
+  tabBarOptions: {
+    activeTintColor: '#28a745',
+    inactiveTintColor:'#232323',
+    style: {
+      backgroundColor: '#F2F2F2'
     },
-    {
-        initialRouteName: 'Details'
-    });
-
-export default class App extends React.Component {
-    render(){
-        return <RootStack />
+    indicatorStyle: {
+      height: 0
     }
-}
+  }
+});
+//组件样式
+const styles = StyleSheet.create({
+  container: {
+   flex: 1
+  },
+  item: {
+    padding: 10,
+    fontSize: 18,
+    height: 44,
+    color:'#232323',
+  },
+  news:{
+    fontSize:20,
+    paddingLeft:10,
+    borderBottomColor:'#dadada',
+    borderBottomWidth:1,
+    justifyContent:'center',
+  }
+});
+
+export default RootTabs;
